@@ -1,5 +1,6 @@
 name: build
-on: [push, pull_request]
+on:
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -7,17 +8,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
-        build_type: [RelWithDebInfo, Debug]
-        ui: [gui, cli]
-        scripting: [lua, noscripts]
-        exclude:
-          - build_type: Debug
-            ui: gui
-          - build_type: RelWithDebInfo
-            ui: cli
-          - build_type: RelWithDebInfo
-            scripting: noscripts
+        os: [windows-latest]
+        build_type: [RelWithDebInfo]
+        ui: [gui]
+        scripting: [lua]
     steps:
     - uses: actions/checkout@v7
       with:
@@ -111,3 +105,8 @@ jobs:
         export ASEPRITE=$PWD/build/bin/aseprite
         cd tests
         $XVFB bash run-tests.sh
+    - name: Upload Aseprite Executable
+      uses: actions/upload-artifact@v4
+      with:
+        name: Aseprite-Release
+        path: build/bin/
